@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ db_password = str(os.getenv("db_password"))
 app = Flask(__name__)
 
 @app.route("/")
-def hello_world():
+def check_db():
     try:
         mydb = mysql.connector.connect(
             host="mysql",
@@ -24,6 +25,13 @@ def hello_world():
         #mycursor.execute("show databases")
         mycursor.close()
         mydb.close()
-        return "<p>Banco de dados conectado</p>"
+        data = {
+            "db_connection": "ESTABILISHED"
+            }
+        return json.dumps(data)
     except Error as e:
-        return f"<p>Erro ao conectar ao banco de dados: {e}</p>"
+        data = {
+            "db_connection": "FAILED",
+            "error": str(e)
+            }
+        return json.dumps(data)
